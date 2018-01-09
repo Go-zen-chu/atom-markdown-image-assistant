@@ -40,6 +40,11 @@ module.exports = MarkdownImageAssistant =
             description: "Insert an image as HTML Markup, `<img src=''>`, instead of Markdown, `![]()`.  Useful if you want to adjust image `width` or `height`"
             type: 'boolean'
             default: false
+        createYearMonthFolder:
+            title: "Create year/month directoryper-file asset directories"
+            description: "Create <imageDir>/year/month directory for copied image. date is defined by the date you pasted."
+            type: 'boolean'
+            default: false
 
     activate: (state) ->
         # Events subscribed to in atom's system can be easily cleaned up
@@ -97,8 +102,13 @@ module.exports = MarkdownImageAssistant =
             console.log "Adding images to non-markdown files is not supported"
             return false
 
-        if atom.config.get('markdown-image-assistant.imageDir') == defaultImageDir && atom.config.get('markdown-image-assistant.preserveFileNameInAssetsFolder')
+        # if flag is true
+        if atom.config.get('markdown-image-assistant.preserveFileNameInAssetsFolder')
             assets_dir = path.basename(path.parse(target_file).name + "." + atom.config.get('markdown-image-assistant.imageDir'))
+        else if atom.config.get('markdown-image-assistant.createYearMonthFolder')
+            assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
+            today = new Date
+            assets_dir = path.join(assets_dir, String(today.getFullYear()), String(today.getMonth() + 1))
         else
             assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
         assets_path = path.join(target_file, "..", assets_dir)
