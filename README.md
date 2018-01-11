@@ -1,5 +1,7 @@
 # [atom-markdown-image-assistant](https://atom.io/packages/markdown-image-assistant)
 
+Forked from [tlnagy/atom\-markdown\-image\-assistant](https://github.com/tlnagy/atom-markdown-image-assistant)
+
 Add sane drag and drop and copy/paste support for images to markdown
 files. This is especially useful for notetaking in Atom.
 
@@ -12,7 +14,7 @@ Image Assistant.
 
 ### Default Settings
 
-Whenever an image is dragged and dropped or copy and pasted on an open markdown file, this package automatically copies it to an `assets/` folder in the current directory, renames the image, and inserts a relative link to the image.
+Whenever an image is dragged and dropped or copy and pasted on an open markdown file, this package automatically copies it to an `assets/` folder in the current directory.
 
 ### Active file types
 
@@ -31,6 +33,9 @@ When dragging and dropping files, whether to preserve original file names when c
 Creates an asset folder in the form of `<fileroot>.assets/`.  Where
 `<fileroot>` is the root of the file without the supported Markdown extensions (`.markdown`, `.md`, `.mdown`, `.mkd`, `.mkdow`).
 
+### Create year/month dir in image dir
+
+Create dir like <image dir>/2018/02/ to make pasting easier for blog system like Wordpress, Jekyll, ...
 
 ### Insert image as Markup, instead of Markdown
 
