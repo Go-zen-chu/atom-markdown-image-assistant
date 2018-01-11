@@ -19,12 +19,12 @@ module.exports = MarkdownImageAssistant =
             title: "Preserve original file names"
             description: "When dragging and dropping files, whether to perserve original file names when copying over into the image directory"
             type: 'boolean'
-            default: false
+            default: true
         prependTargetFileName:
             title: "Prepend the target file name"
             description: "Whether to prepend the target file name when copying over the image. Overrides the \"Preserve Original Name\" setting."
             type: 'boolean'
-            default: true
+            default: false
         preserveFileNameInAssetsFolder:
             title: "Create per-file asset directories"
             description: "Creates a separate asset directory for each markdown file, e.g. `README.assets/`; setting `Image Directory` to a value other than the default of `assets/` overrides this option"
@@ -38,6 +38,11 @@ module.exports = MarkdownImageAssistant =
         insertHtmlOverMarkdown:
             title: "Insert image as Markup, instead of Markdown"
             description: "Insert an image as HTML Markup, `<img src=''>`, instead of Markdown, `![]()`.  Useful if you want to adjust image `width` or `height`"
+            type: 'boolean'
+            default: false
+        createYearMonthFolder:
+            title: "Create <imageDir>/year/month directory for pasted images"
+            description: "Create <imageDir>/year/month directory for copied image. Date is defined by the date you pasted."
             type: 'boolean'
             default: false
 
@@ -89,6 +94,12 @@ module.exports = MarkdownImageAssistant =
         imgbuffer = img.toPng()
         @process_file(editor, imgbuffer, ".png", "")
 
+    # padding 0 for month
+    force_two_digits: (val) ->
+        if val < 10
+            return "0#{val}"
+        return val
+
     # write a given buffer to the local "assets/" directory
     process_file: (editor, imgbuffer, extname, origname) ->
         target_file = editor.getPath()
@@ -97,8 +108,15 @@ module.exports = MarkdownImageAssistant =
             console.log "Adding images to non-markdown files is not supported"
             return false
 
-        if atom.config.get('markdown-image-assistant.imageDir') == defaultImageDir && atom.config.get('markdown-image-assistant.preserveFileNameInAssetsFolder')
+        # if flag is true
+        if atom.config.get('markdown-image-assistant.preserveFileNameInAssetsFolder')
             assets_dir = path.basename(path.parse(target_file).name + "." + atom.config.get('markdown-image-assistant.imageDir'))
+        else if atom.config.get('markdown-image-assistant.createYearMonthFolder')
+            assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
+            today = new Date
+            year_str = String(today.getFullYear())
+            month_str = String(@force_two_digits(today.getMonth() + 1))
+            assets_dir = path.join(assets_dir, year_str, month_str)
         else
             assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
         assets_path = path.join(target_file, "..", assets_dir)
@@ -118,12 +136,13 @@ module.exports = MarkdownImageAssistant =
             fs.writeFile path.join(assets_path, img_filename), imgbuffer, 'binary', ()=>
                 console.log "Copied file over to #{assets_path}"
                 if atom.config.get('markdown-image-assistant.insertHtmlOverMarkdown')
-                  editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"\" height=\"\" >"
+                  editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"\" height=\"\">"
                 else
                   editor.insertText "![](#{assets_dir}/#{img_filename})"
 
         return false
 
+    # create directory
     create_dir: (dir_path, callback)=>
         dir_handle = new Directory(dir_path)
 

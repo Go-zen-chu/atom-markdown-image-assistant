@@ -1,7 +1,7 @@
 {
   "name": "markdown-image-assistant",
   "main": "./lib/main",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Add sane drag and drop and copy/paste support for images to markdown files",
   "keywords": [
     "markdown",
@@ -12,7 +12,7 @@
     "copy",
     "paste"
   ],
-  "repository": "https://github.com/tlnagy/atom-markdown-image-assistant",
+  "repository": "https://github.com/go-zen-chu/atom-markdown-image-assistant",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
