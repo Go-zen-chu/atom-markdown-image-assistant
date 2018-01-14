@@ -124,7 +124,9 @@ module.exports = MarkdownImageAssistant =
         md5 = crypto.createHash 'md5'
         md5.update(imgbuffer)
 
-        if !atom.config.get('markdown-image-assistant.prependTargetFileName')
+        if atom.config.get('markdown-image-assistant.preserveOrigName')
+            img_filename = "#{origname}#{extname}"
+        else if !atom.config.get('markdown-image-assistant.prependTargetFileName')
             img_filename = "#{md5.digest('hex').slice(0,8)}#{extname}"
         else if origname == ""
             img_filename = "#{path.parse(target_file).name}-#{md5.digest('hex').slice(0,8)}#{extname}"
