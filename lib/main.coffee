@@ -4,6 +4,7 @@ path = require 'path'
 crypto = require "crypto"
 
 defaultImageDir = "assets/"
+defaultImageHtmlWidth = 600
 
 module.exports = MarkdownImageAssistant =
     subscriptions: null
@@ -36,10 +37,15 @@ module.exports = MarkdownImageAssistant =
             type: 'string'
             default: defaultImageDir
         insertHtmlOverMarkdown:
-            title: "Insert image as Markup, instead of Markdown"
+            title: "Insert image as html, instead of Markdown"
             description: "Insert an image as HTML Markup, `<img src=''>`, instead of Markdown, `![]()`.  Useful if you want to adjust image `width` or `height`"
             type: 'boolean'
-            default: false
+            default: true
+        insertImageHtmlWidth:
+            title: "HTML image width"
+            description: "HTML image width when insertHtmlOverMarkdown is set true"
+            type: 'integer'
+            default: defaultImageHtmlWidth
         createYearMonthFolder:
             title: "Create <imageDir>/year/month directory for pasted images"
             description: "Create <imageDir>/year/month directory for copied image. Date is defined by the date you pasted."
@@ -138,7 +144,8 @@ module.exports = MarkdownImageAssistant =
             fs.writeFile path.join(assets_path, img_filename), imgbuffer, 'binary', ()=>
                 console.log "Copied file over to #{assets_path}"
                 if atom.config.get('markdown-image-assistant.insertHtmlOverMarkdown')
-                  editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"\" height=\"\">"
+                  imgWidth = atom.config.get('markdown-image-assistant.insertImageHtmlWidth')
+                  editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"#{imgWidth}\">"
                 else
                   editor.insertText "![](#{assets_dir}/#{img_filename})"
 
